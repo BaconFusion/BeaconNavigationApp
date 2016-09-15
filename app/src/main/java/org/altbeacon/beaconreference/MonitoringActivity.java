@@ -159,10 +159,17 @@ public class MonitoringActivity extends Activity  {
 
 	public void startCallibration(View view){
 		Intent intent = new Intent(this, CallibratingActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		//EditText editText = (EditText) findViewById(R.id.edit_message);
 		//String message = editText.getText().toString();
-		//intent.putExtra(EXTRA_MESSAGE, message);
+		EditText ipField = (EditText) findViewById(R.id.ipAdress);
+		EditText portField = (EditText) findViewById(R.id.portField);
+
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+
+		intent.putExtra("EXTRA_IP", ipField.getText().toString());
+		intent.putExtra("EXTRA_PORT", portField.getText().toString());
 		this.startActivity(intent);
 
 	}

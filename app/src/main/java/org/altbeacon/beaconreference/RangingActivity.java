@@ -15,6 +15,7 @@ import org.altbeacon.beacon.Region;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class RangingActivity extends Activity implements BeaconConsumer {
@@ -36,6 +37,7 @@ public class RangingActivity extends Activity implements BeaconConsumer {
             return;
         }
     }
+
 
     public static void stopTCPConnection() {
         try {
