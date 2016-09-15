@@ -10,14 +10,26 @@ import android.widget.TextView;
 import android.os.StrictMode;
 import android.view.View;
 
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * Created by fabiola on 15.09.16.
  */
 public class CallibratingActivity extends Activity {
     protected static final String TAG = "CallibratingActivity";
     private MonitoringActivity monitoringActivity = null;
+    private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
     String ip = "";
     String port = "";
+    private int sum = 0;
 
 
     @Override
@@ -56,11 +68,42 @@ public class CallibratingActivity extends Activity {
 
         Intent myIntent = new Intent(this, RangingActivity.class);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        //StrictMode.setThreadPolicy(policy);
 
-        RangingActivity.startTCPConnection(ip, Integer.parseInt(port));
+        int rssi_onemeter = startLog();
+        logToDisplay(Integer.toString(rssi_onemeter));
         this.startActivity(myIntent);
+    }
+
+
+    public int startLog() {
+        beaconManager.setRangeNotifier(new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                logToDisplay("found " + beacons.size() + "beacons");
+
+                for (Beacon beacon : beacons) {
+                    if (beacon.getId3().toInt() == 981){
+                        sum += beacon.getRssi();
+                        logToDisplay(Integer.toString(beacon.getRssi()));
+                    }
+
+                }
+
+            }
+        });
+
+        return sum;
+    }
+
+    private void logToDisplay(final String line) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                EditText editText = (EditText) CallibratingActivity.this.findViewById(R.id.calli_events);
+                editText.append(line + "\n");
+            }
+        });
     }
 
 }
