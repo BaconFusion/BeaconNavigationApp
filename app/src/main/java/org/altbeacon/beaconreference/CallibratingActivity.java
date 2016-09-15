@@ -6,28 +6,34 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * Created by fabiola on 15.09.16.
  */
 public class CallibratingActivity extends Activity {
     protected static final String TAG = "CallibratingActivity";
+    private MonitoringActivity monitoringActivity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_callibrating);
+        Bundle values = getIntent().getExtras();
 
-        //Intent intent = getIntent();
-        logToDisplay("Callibrating just launched");
-        //String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-        //TextView textView = new TextView(this);
-        //textView.setTextSize(40);
-        //textView.setText("Callibrating");
+        String ip = "";
+        String port = "";
 
-        //ViewGroup layout = (ViewGroup) findViewById(R.id.activity_callibrating);
-        //layout.addView(textView);
+        if (values != null){
+            ip = values.getString("EXTRA_IP");
+            port = values.getString("EXTRA_PORT");
+        }
+
+        TextView text1 = (TextView)findViewById(R.id.ip_text);
+        TextView text2 = (TextView)findViewById(R.id.port_text);
+        text1.setText("Used IP-Adress: "+ip);
+        text2.setText("Connect to Port: "+port);
     }
 
     @Override
