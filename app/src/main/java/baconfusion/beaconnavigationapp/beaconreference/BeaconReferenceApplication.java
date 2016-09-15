@@ -14,6 +14,7 @@ import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
+import baconfusion.beaconnavigationapp.CalibrationActivity;
 
 import baconfusion.beaconnavigationapp.R;
 
@@ -26,7 +27,7 @@ public class BeaconReferenceApplication extends Application implements Bootstrap
     private BackgroundPowerSaver backgroundPowerSaver;
     private boolean haveDetectedBeaconsSinceBoot = false;
     private MonitoringActivity monitoringActivity = null;
-    private CallibratingActivity callibratingActivity = null;
+    //private CallibratingActivity callibratingActivity = null;
 
 
     public void onCreate() {
@@ -131,8 +132,8 @@ public class BeaconReferenceApplication extends Application implements Bootstrap
         this.monitoringActivity = activity;
     }
 
-    public void setCallibratingActivity(CallibratingActivity activity) {
-        this.callibratingActivity = activity;
-    }
+//    public void setCallibratingActivity(CallibratingActivity activity) {
+//        this.callibratingActivity = activity;
+//    }
 
 }

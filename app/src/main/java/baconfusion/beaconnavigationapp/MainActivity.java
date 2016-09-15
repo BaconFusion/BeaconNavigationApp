@@ -68,7 +68,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.activity_main);
 
         verifyBluetooth();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -160,8 +160,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
     }
 
     public void onCalibrationClicked(View view){
-//        Intent intent = new Intent(this,  calibrationclass   .class);
-//        startActivity(intent);
+        Intent intent = new Intent(this,  CalibrationActivity.class);
+        startActivity(intent);
     }
 
 

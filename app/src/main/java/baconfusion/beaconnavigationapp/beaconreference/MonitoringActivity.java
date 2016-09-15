@@ -159,23 +159,23 @@ public class MonitoringActivity extends Activity  {
     	});
     }
 
-	public void startCallibration(View view){
-		Intent intent = new Intent(this, CallibratingActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		//EditText editText = (EditText) findViewById(R.id.edit_message);
-		//String message = editText.getText().toString();
-		//intent.putExtra(EXTRA_MESSAGE, message);
-		this.startActivity(intent);
-
-	}
+//	public void startCallibration(View view){
+//		Intent intent = new Intent(this, CallibratingActivity.class);
+//		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		//EditText editText = (EditText) findViewById(R.id.edit_message);
+//		//String message = editText.getText().toString();
+//		//intent.putExtra(EXTRA_MESSAGE, message);
+//		this.startActivity(intent);
+//
+//	}
 
 	/*
-	public class CallibratingFragment extends Fragment {
+	public class CalibratingFragment extends Fragment {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 								 Bundle savedInstanceState) {
 			// Inflate the layout for this fragment
-			return inflater.inflate(R.layout.callibrate_view, container, false);
+			return inflater.inflate(R.layout.calibrate_view, container, false);
 		}
 	}
 	*/

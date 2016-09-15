@@ -1,52 +1,49 @@
-package org.altbeacon.beaconreference;
-
-import android.Manifest;
+package baconfusion.beaconnavigationapp;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 
 /**
  * Created by fabiola on 15.09.16.
  */
-public class CallibratingActivity extends Activity {
-    protected static final String TAG = "CallibratingActivity";
+public class CalibrationActivity extends Activity {
+    protected static final String TAG = "CalibrationActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_callibrating);
+        setContentView(R.layout.activity_calibrating);
 
         //Intent intent = getIntent();
-        logToDisplay("Callibrating just launched");
+        logToDisplay("Calibrating just launched");
         //String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         //TextView textView = new TextView(this);
         //textView.setTextSize(40);
-        //textView.setText("Callibrating");
+        //textView.setText("Calibrating");
 
-        //ViewGroup layout = (ViewGroup) findViewById(R.id.activity_callibrating);
+        //ViewGroup layout = (ViewGroup) findViewById(R.id.activity_calibrating);
         //layout.addView(textView);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((BeaconReferenceApplication) this.getApplicationContext()).setCallibratingActivity(this);
+//        ((BeaconReferenceApplication) this.getApplicationContext()).setCallibratingActivity(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((BeaconReferenceApplication) this.getApplicationContext()).setCallibratingActivity(null);
+//        ((BeaconReferenceApplication) this.getApplicationContext()).setCallibratingActivity(null);
     }
 
     public void logToDisplay(final String line) {
         runOnUiThread(new Runnable() {
             public void run() {
-                EditText editText = (EditText)CallibratingActivity.this
-                        .findViewById(R.id.callibratingText);
+                EditText editText = (EditText)CalibrationActivity.this
+                        .findViewById(R.id.calibratingText);
                 editText.append(line+"\n");
             }
         });

@@ -14,7 +14,7 @@
         android:layout_marginTop="17dp"
         android:text="Callibrating Events:" />
     <EditText
-        android:id="@+id/callibratingText"
+        android:id="@+id/calibratingText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
