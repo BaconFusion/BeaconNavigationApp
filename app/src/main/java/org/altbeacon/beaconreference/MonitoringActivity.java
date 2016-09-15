@@ -13,6 +13,11 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
 
 import org.altbeacon.beacon.BeaconManager;
 
@@ -24,7 +29,6 @@ import org.altbeacon.beacon.BeaconManager;
 public class MonitoringActivity extends Activity  {
 	protected static final String TAG = "MonitoringActivity";
 	private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -153,4 +157,24 @@ public class MonitoringActivity extends Activity  {
     	});
     }
 
+	public void startCallibration(View view){
+		Intent intent = new Intent(this, CallibratingActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		//EditText editText = (EditText) findViewById(R.id.edit_message);
+		//String message = editText.getText().toString();
+		//intent.putExtra(EXTRA_MESSAGE, message);
+		this.startActivity(intent);
+
+	}
+
+	/*
+	public class CallibratingFragment extends Fragment {
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+								 Bundle savedInstanceState) {
+			// Inflate the layout for this fragment
+			return inflater.inflate(R.layout.callibrate_view, container, false);
+		}
+	}
+	*/
 }
