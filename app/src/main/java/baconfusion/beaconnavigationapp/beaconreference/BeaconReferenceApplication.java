@@ -26,6 +26,7 @@ public class BeaconReferenceApplication extends Application implements Bootstrap
     private BackgroundPowerSaver backgroundPowerSaver;
     private boolean haveDetectedBeaconsSinceBoot = false;
     private MonitoringActivity monitoringActivity = null;
+    private CallibratingActivity callibratingActivity = null;
 
 
     public void onCreate() {
@@ -128,6 +129,10 @@ public class BeaconReferenceApplication extends Application implements Bootstrap
 
     public void setMonitoringActivity(MonitoringActivity activity) {
         this.monitoringActivity = activity;
+    }
+
+    public void setCallibratingActivity(CallibratingActivity activity) {
+        this.callibratingActivity = activity;
     }
 
 }

@@ -29,6 +29,10 @@
             android:name="baconfusion.beaconnavigationapp.beaconreference.RangingActivity"
             android:label="@string/app_name" />
 
+        <activity
+            android:name="baconfusion.beaconnavigationapp.CallibratingActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>
