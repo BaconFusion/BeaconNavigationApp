@@ -1,5 +1,11 @@
 <resources>
 
-    <string name="app_name">BeaconReference</string>
+    <string name="app_name">BeaconNavigationApp</string>
 
+    <string name="save_ip">save_ip</string>
+    <string name="save_port">save_port</string>
+
+    <string name="save_var_a">save_var_a</string>
+    <string name="save_var_b">save_var_b</string>
+    <string name="save_var_c">save_var_c</string>
 </resources>

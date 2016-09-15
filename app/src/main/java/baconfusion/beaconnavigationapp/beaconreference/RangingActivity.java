@@ -1,4 +1,4 @@
-package org.altbeacon.beaconreference;
+package baconfusion.beaconnavigationapp.beaconreference;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -16,6 +16,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Collection;
+
+import baconfusion.beaconnavigationapp.R;
 
 public class RangingActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "RangingActivity";

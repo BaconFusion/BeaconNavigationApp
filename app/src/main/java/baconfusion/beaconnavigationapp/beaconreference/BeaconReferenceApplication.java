@@ -1,4 +1,4 @@
-package org.altbeacon.beaconreference;
+package baconfusion.beaconnavigationapp.beaconreference;
 
 import android.app.Application;
 import android.app.NotificationManager;
@@ -10,11 +10,12 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
+
+import baconfusion.beaconnavigationapp.R;
 
 /**
  * Created by dyoung on 12/13/13.

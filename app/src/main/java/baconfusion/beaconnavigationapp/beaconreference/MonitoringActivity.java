@@ -1,4 +1,4 @@
-package org.altbeacon.beaconreference;
+package baconfusion.beaconnavigationapp.beaconreference;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.EditText;
 
 import org.altbeacon.beacon.BeaconManager;
+
+import baconfusion.beaconnavigationapp.R;
 
 /**
  * 
@@ -110,22 +112,22 @@ public class MonitoringActivity extends Activity  {
 		try {
 			if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
 				final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Bluetooth not enabled");			
+				builder.setTitle("Bluetooth not enabled");
 				builder.setMessage("Please enable bluetooth in settings and restart this application.");
 				builder.setPositiveButton(android.R.string.ok, null);
 				builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 					@Override
 					public void onDismiss(DialogInterface dialog) {
 						finish();
-			            System.exit(0);					
-					}					
+			            System.exit(0);
+					}
 				});
 				builder.show();
-			}			
+			}
 		}
 		catch (RuntimeException e) {
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Bluetooth LE not available");			
+			builder.setTitle("Bluetooth LE not available");
 			builder.setMessage("Sorry, this device does not support Bluetooth LE.");
 			builder.setPositiveButton(android.R.string.ok, null);
 			builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -133,22 +135,22 @@ public class MonitoringActivity extends Activity  {
 				@Override
 				public void onDismiss(DialogInterface dialog) {
 					finish();
-		            System.exit(0);					
+		            System.exit(0);
 				}
-				
+
 			});
 			builder.show();
-			
+
 		}
-		
-	}	
+
+	}
 
     public void logToDisplay(final String line) {
     	runOnUiThread(new Runnable() {
     	    public void run() {
     	    	EditText editText = (EditText)MonitoringActivity.this
     					.findViewById(R.id.monitoringText);
-       	    	editText.append(line+"\n");            	    	    		
+       	    	editText.append(line+"\n");
     	    }
     	});
     }
