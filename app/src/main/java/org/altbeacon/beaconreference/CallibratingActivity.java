@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.os.StrictMode;
+import android.view.View;
 
 /**
  * Created by fabiola on 15.09.16.
@@ -14,6 +16,9 @@ import android.widget.TextView;
 public class CallibratingActivity extends Activity {
     protected static final String TAG = "CallibratingActivity";
     private MonitoringActivity monitoringActivity = null;
+    String ip = "";
+    String port = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,9 +26,6 @@ public class CallibratingActivity extends Activity {
 
         setContentView(R.layout.activity_callibrating);
         Bundle values = getIntent().getExtras();
-
-        String ip = "";
-        String port = "";
 
         if (values != null){
             ip = values.getString("EXTRA_IP");
@@ -48,14 +50,17 @@ public class CallibratingActivity extends Activity {
         ((BeaconReferenceApplication) this.getApplicationContext()).setCallibratingActivity(null);
     }
 
-    public void logToDisplay(final String line) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                EditText editText = (EditText)CallibratingActivity.this
-                        .findViewById(R.id.callibratingText);
-                editText.append(line+"\n");
-            }
-        });
+
+    public void callibrateOne(View view){
+        monitoringActivity = new MonitoringActivity();
+
+        Intent myIntent = new Intent(this, RangingActivity.class);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        RangingActivity.startTCPConnection(ip, Integer.parseInt(port));
+        this.startActivity(myIntent);
     }
 
 }

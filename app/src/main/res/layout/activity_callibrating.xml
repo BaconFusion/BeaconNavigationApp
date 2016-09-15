@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/activity_callibrating">
+    android:id="@+id/activity_callibrating"
+    android:weightSum="1">
 
 
     <TextView
@@ -12,32 +13,32 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="17dp"
-        android:text="Callibrating Events:" />
-    <EditText
-        android:id="@+id/callibratingText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="36dp"
-        android:ems="10"
-        android:gravity="left|top"
-        android:inputType="textMultiLine" >
-        <requestFocus />
-    </EditText>
+        android:text="Callibrating Events:"
+        android:layout_weight="0.05" />
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
-        android:id="@+id/ip_text" />
+        android:id="@+id/port_text"
+        android:layout_weight="0.03" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
-        android:id="@+id/port_text" />
+        android:id="@+id/ip_text"
+        android:layout_weight="0.03" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="One meter"
+        android:id="@+id/callibrate1m"
+        android:layout_weight="0.05"
+        android:onClick="callibrateOne"/>
 
 </LinearLayout>
