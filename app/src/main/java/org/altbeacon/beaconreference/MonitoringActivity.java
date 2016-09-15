@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+
 import org.altbeacon.beacon.BeaconManager;
 
 /**
@@ -152,5 +153,14 @@ public class MonitoringActivity extends Activity  {
     	    }
     	});
     }
+
+	public void startCallibration(View view){
+		Intent intent = new Intent(this, CallibratingActivity.class);
+		//EditText editText = (EditText) findViewById(R.id.edit_message);
+		//String message = editText.getText().toString();
+		//intent.putExtra(EXTRA_MESSAGE, message);
+		startActivity(intent);
+
+	}
 
 }
