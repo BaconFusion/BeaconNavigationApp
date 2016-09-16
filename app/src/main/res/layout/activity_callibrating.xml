@@ -40,7 +40,7 @@
         android:text="Start Measurement"
         android:id="@+id/callibrate1m"
         android:layout_weight="0.05"
-        android:onClick="callibrateOne"/>
+        android:onClick="startCallibration"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -85,6 +85,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/onemeter"
         android:layout_weight="0.05" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Calculate Constants!"
+        android:id="@+id/calculateConst"
+        android:layout_weight="0.05"
+        android:onClick="calculateConstants"/>
 
 
 </LinearLayout>

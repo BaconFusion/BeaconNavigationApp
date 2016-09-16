@@ -73,7 +73,26 @@ public class CallibratingActivity extends Activity implements BeaconConsumer {
         if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(false);
     }
 
-    public void callibrateOne(View view){
+    @Override
+    public void onBeaconServiceConnect() {
+        beaconManager.setRangeNotifier(new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+
+                if (beacons.size() > 0) {
+                    logToDisplay("The first beacon's rssi: "+beacons.iterator().next().getRssi());
+                    EditText distance = (EditText) findViewById(R.id.distance);
+                    appendLog(beacons.iterator().next().getRssi(),distance.getText().toString());
+                }
+            }
+        });
+
+        try {
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+        } catch (RemoteException e) {  e.printStackTrace();  }
+    }
+
+    public void startCallibration(View view){
         // adding iBeacon Format to Library:
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
@@ -112,13 +131,14 @@ public class CallibratingActivity extends Activity implements BeaconConsumer {
         catch (IOException e) {
             logToDisplay("Failed to calculate RSSI");
         }
-
+        //Save value to SharedPreferences
         SharedPreferences constants = getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences.Editor editor = constants.edit();
         String key = "rssi_"+distance+"meter";
         editor.putInt(key, sum/counter);
         editor.commit();
 
+        //Lets see the value, just for checking
         int consta = constants.getInt(key,0);
         EditText editText = (EditText) CallibratingActivity.this.findViewById(R.id.onemeter);
         editText.setText("RSSI in "+distance+" meter: "+Integer.toString(consta));
@@ -126,24 +146,7 @@ public class CallibratingActivity extends Activity implements BeaconConsumer {
         file.delete();
     }
 
-    @Override
-    public void onBeaconServiceConnect() {
-        beaconManager.setRangeNotifier(new RangeNotifier() {
-            @Override
-            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
 
-                if (beacons.size() > 0) {
-                    logToDisplay("The first beacon's rssi: "+beacons.iterator().next().getRssi());
-                    EditText distance = (EditText) findViewById(R.id.distance);
-                    appendLog(beacons.iterator().next().getRssi(),distance.getText().toString());
-                }
-            }
-        });
-
-        try {
-            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {  e.printStackTrace();  }
-    }
 
     public void appendLog(int value,String distance)
     {
@@ -176,6 +179,47 @@ public class CallibratingActivity extends Activity implements BeaconConsumer {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void calculateConstants(View view){
+
+        //Calculate Ratio: RSSI/RSSI@1meter
+        Integer[] ratio = new Integer[10];
+
+        for (int d=1;d<=10;d++){
+            SharedPreferences constants = getSharedPreferences(PREFS_NAME,0);
+            String key = "rssi_"+d+"meter";
+            int rssi = constants.getInt(key,0);
+            ratio[d-1]=rssi/constants.getInt( "rssi_1meter",0);
+        }
+        //Save Ratio in file
+        String filename = "ratios.txt";
+        File sdcard = Environment.getExternalStorageDirectory();
+
+        File file = new File(sdcard,filename);
+
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        //Write to file
+        FileWriter writer;
+        for(int i=1;i<=10;i++){
+            try {
+                writer = new FileWriter(file, true);
+                BufferedWriter out = new BufferedWriter(writer);
+                out.write(Integer.toString(ratio[i]));
+                out.newLine();
+                out.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
