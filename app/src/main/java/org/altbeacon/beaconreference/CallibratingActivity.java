@@ -4,6 +4,7 @@ import android.Manifest;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -12,96 +13,178 @@ import android.view.View;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.altbeacon.beacon.BeaconConsumer;
+import android.os.RemoteException;
+import android.util.Log;
+import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.InputStream;
+import android.content.Context;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import android.os.Environment;
+import java.util.Calendar;
 
 /**
  * Created by fabiola on 15.09.16.
  */
-public class CallibratingActivity extends Activity {
+public class CallibratingActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "CallibratingActivity";
-    private MonitoringActivity monitoringActivity = null;
     private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
-    String ip = "";
-    String port = "";
     private int sum = 0;
+    private boolean readLines = false;
+    private int counter = 1;
+    public static final String PREFS_NAME = "MyPrefsFile";
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_callibrating);
-        Bundle values = getIntent().getExtras();
-
-        if (values != null){
-            ip = values.getString("EXTRA_IP");
-            port = values.getString("EXTRA_PORT");
-        }
-
-        TextView text1 = (TextView)findViewById(R.id.ip_text);
-        TextView text2 = (TextView)findViewById(R.id.port_text);
-        text1.setText("Used IP-Adress: "+ip);
-        text2.setText("Connect to Port: "+port);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((BeaconReferenceApplication) this.getApplicationContext()).setCallibratingActivity(this);
+    protected void onDestroy() {
+        super.onDestroy();
+        beaconManager.unbind(this);
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
-        ((BeaconReferenceApplication) this.getApplicationContext()).setCallibratingActivity(null);
+        if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(false);
+    }
 
     public void callibrateOne(View view){
-        monitoringActivity = new MonitoringActivity();
-
-        Intent myIntent = new Intent(this, RangingActivity.class);
-
-        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        //StrictMode.setThreadPolicy(policy);
-
-        int rssi_onemeter = startLog();
-        logToDisplay(Integer.toString(rssi_onemeter));
-        this.startActivity(myIntent);
+        // adding iBeacon Format to Library:
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.bind(this);
     }
 
 
-    public int startLog() {
+    public void stopCallibration(View view) {
+        // read from log file and get average
+        //onPause();
+        File sdcard = Environment.getExternalStorageDirectory();
+
+        Calendar c = Calendar.getInstance();
+        int date = c.get(Calendar.DATE);
+        int hour = c.get(Calendar.HOUR);
+
+        EditText dist = (EditText) findViewById(R.id.distance);
+        String distance = dist.getText().toString();
+
+        //Get the text file
+        String filename = date+hour+distance+"meter.txt";
+        File file = new File(sdcard,filename);
+        //Read text from file
+        StringBuilder text = new StringBuilder();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+
+                sum += Integer.parseInt(line);
+                counter ++;
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            logToDisplay("Failed to calculate RSSI");
+        }
+
+        SharedPreferences constants = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = constants.edit();
+        String key = "rssi_"+distance+"meter";
+        editor.putInt(key, sum/counter);
+        editor.commit();
+
+        int consta = constants.getInt(key,0);
+        EditText editText = (EditText) CallibratingActivity.this.findViewById(R.id.onemeter);
+        editText.setText("RSSI in "+distance+" meter: "+Integer.toString(consta));
+
+        file.delete();
+    }
+
+    @Override
+    public void onBeaconServiceConnect() {
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                logToDisplay("found " + beacons.size() + "beacons");
 
-                for (Beacon beacon : beacons) {
-                    if (beacon.getId3().toInt() == 981){
-                        sum += beacon.getRssi();
-                        logToDisplay(Integer.toString(beacon.getRssi()));
-                    }
-
+                if (beacons.size() > 0) {
+                    logToDisplay("The first beacon's rssi: "+beacons.iterator().next().getRssi());
+                    EditText distance = (EditText) findViewById(R.id.distance);
+                    appendLog(beacons.iterator().next().getRssi(),distance.getText().toString());
                 }
-
             }
         });
 
-        return sum;
+        try {
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+        } catch (RemoteException e) {  e.printStackTrace();  }
     }
+
+    public void appendLog(int value,String distance)
+    {
+        Calendar c = Calendar.getInstance();
+        int date = c.get(Calendar.DATE);
+        int hour = c.get(Calendar.HOUR);
+
+        //Create the text file
+        String filename = date+hour+distance+"meter.txt";
+        File sdcard = Environment.getExternalStorageDirectory();
+
+        File file = new File(sdcard,filename);
+
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        //Write to file
+        FileWriter writer;
+        try {
+            writer = new FileWriter(file, true);
+            BufferedWriter out = new BufferedWriter(writer);
+            out.write(Integer.toString(value));
+            out.newLine();
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void logToDisplay(final String line) {
         runOnUiThread(new Runnable() {
             public void run() {
                 EditText editText = (EditText) CallibratingActivity.this.findViewById(R.id.calli_events);
-                editText.append(line + "\n");
+                editText.setText(line);
             }
         });
     }

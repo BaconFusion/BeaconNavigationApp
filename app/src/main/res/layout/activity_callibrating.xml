@@ -5,7 +5,6 @@
     android:id="@+id/activity_callibrating"
     android:weightSum="1">
 
-
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
@@ -16,6 +15,40 @@
         android:text="Callibrating Events:"
         android:layout_weight="0.05" />
 
+    <TextView
+        android:id="@+id/headline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="17dp"
+        android:text="Type in distance:"
+        android:layout_weight="0.05" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/distance"
+        android:layout_weight="0.05" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Measurement"
+        android:id="@+id/callibrate1m"
+        android:layout_weight="0.05"
+        android:onClick="callibrateOne"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Current RSSI:"
+        android:id="@+id/textView4"
+        android:layout_weight="0.05" />
 
     <EditText
         android:id="@+id/calli_events"
@@ -31,28 +64,27 @@
 
     </EditText>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
-        android:id="@+id/port_text"
-        android:layout_weight="0.03" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
-        android:id="@+id/ip_text"
-        android:layout_weight="0.03" />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="One meter"
-        android:id="@+id/callibrate1m"
+        android:text="STOP"
+        android:id="@+id/disableCalli"
         android:layout_weight="0.05"
-        android:onClick="callibrateOne"/>
+        android:onClick="stopCallibration" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Average (press STOP):"
+        android:id="@+id/textView3"
+        android:layout_weight="0.05" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/onemeter"
+        android:layout_weight="0.05" />
+
 
 </LinearLayout>
