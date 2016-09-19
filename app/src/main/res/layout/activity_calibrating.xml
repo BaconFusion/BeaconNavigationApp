@@ -28,7 +28,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:ems="10"
         android:id="@+id/distance"
         android:layout_weight="0.05" />
@@ -89,10 +89,10 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Calculate Constants!"
+        android:text="Send Calibration Data"
         android:id="@+id/calculateConst"
         android:layout_weight="0.05"
-        android:onClick="calculateConstants"/>
+        android:onClick="sendCalibrationData"/>
 
 
 </LinearLayout>
