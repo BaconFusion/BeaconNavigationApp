@@ -34,6 +34,8 @@ import android.content.Context;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import android.os.Environment;
+import android.widget.Toast;
+
 import java.util.Calendar;
 
 import baconfusion.beaconnavigationapp.R;
@@ -47,7 +49,13 @@ public class CalibrationActivity extends Activity implements BeaconConsumer {
     private int sum = 0;
     private boolean readLines = false;
     private int counter = 1;
-    public static final String PREFS_NAME = "MyPrefsFile";
+    private ArrayList<Float> keys = new ArrayList<Float>();
+    private ArrayList<Float> values = new ArrayList<Float>();
+    private ServerConnection serverConnection;
+    private String ip;
+    private String port;
+    private int num_beacons;
+
 
 
 
@@ -55,6 +63,22 @@ public class CalibrationActivity extends Activity implements BeaconConsumer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibrating);
+
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            ip = extras.getString("EXTRA_IP");
+            port = extras.getString("EXTRA_PORT");
+            num_beacons = extras.getInt("EXTRA_LISTSIZE");
+        }
+
+        if(num_beacons == 0){
+            Context context = getApplicationContext();
+            CharSequence text = "No Beacons found!";
+            int duration = Toast.LENGTH_LONG;
+            Toast toast = Toast.makeText(context,text,duration);
+            toast.show();
+        }
+
     }
 
     @Override
@@ -94,10 +118,12 @@ public class CalibrationActivity extends Activity implements BeaconConsumer {
         } catch (RemoteException e) {  e.printStackTrace();  }
     }
 
-    public void startCallibration(View view){
+    public void startCalibration(View view){
         // adding iBeacon Format to Library:
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
+
+
     }
 
 
@@ -133,23 +159,28 @@ public class CalibrationActivity extends Activity implements BeaconConsumer {
         catch (IOException e) {
             logToDisplay("Failed to calculate RSSI");
         }
+
+        keys.add(Float.parseFloat(distance));
+        values.add(sum/(float)counter);
+
         //Save value to SharedPreferences
-        SharedPreferences constants = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = constants.edit();
-        String key = "rssi_"+distance+"meter";
-        editor.putInt(key, sum/counter);
-        editor.apply();
+       // SharedPreferences constants = getSharedPreferences(PREFS_NAME, 0);
+        //SharedPreferences.Editor editor = constants.edit();
+        //String key = "rssi_"+distance+"meter";
+        //editor.putInt(key, sum/counter);
+        //editor.apply();
 
         //Lets see the value, just for checking
-        int consta = constants.getInt(key,0);
+        //int consta = constants.getInt(key,0);
         EditText editText = (EditText) CalibrationActivity.this.findViewById(R.id.onemeter);
-        editText.setText("RSSI in "+distance+" meter: "+Integer.toString(consta));
+        editText.setText("RSSI in "+distance+" meter: "+Float.toString(sum/(float)counter));
 
         file.delete();
     }
 
-
-
+    /*
+    * Writes calibration data to sdcard in form of txt-files
+     */
     public void appendLog(int value,String distance)
     {
         Calendar c = Calendar.getInstance();
@@ -184,47 +215,10 @@ public class CalibrationActivity extends Activity implements BeaconConsumer {
         }
     }
 
-    public void calculateConstants(View view){
-
-        //Calculate Ratio: RSSI/RSSI@1meter
-        Integer[] ratio = new Integer[10];
-
-        for (int d=1;d<=10;d++){
-            SharedPreferences constants = getSharedPreferences(PREFS_NAME,0);
-            String key = "rssi_"+d+"meter";
-            int rssi = constants.getInt(key,0);
-            ratio[d-1]=rssi/constants.getInt( "rssi_1meter",0);
-        }
-        //Save Ratio in file
-        String filename = "ratios.txt";
-        File sdcard = Environment.getExternalStorageDirectory();
-
-        File file = new File(sdcard,filename);
-
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        //Write to file
-        FileWriter writer;
-        for(int i=1;i<=10;i++){
-            try {
-                writer = new FileWriter(file, true);
-                BufferedWriter out = new BufferedWriter(writer);
-                out.write(Integer.toString(ratio[i]));
-                out.newLine();
-                out.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public void sendCalibrationData(View view) throws IOException{
+        serverConnection = new ServerConnection(ip, Integer.parseInt(port));
+        serverConnection.sendCalibrationData(keys,values);
     }
-
 
     private void logToDisplay(final String line) {
         runOnUiThread(new Runnable() {

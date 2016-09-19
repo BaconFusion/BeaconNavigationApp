@@ -72,9 +72,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Callibrate"
+        android:text="Calibrate"
         android:id="@+id/button2"
-        android:onClick="startCallibration"
+        android:onClick="startCalibration"
         android:layout_below="@+id/ipAdress"
         android:layout_alignEnd="@+id/textView1" />
 

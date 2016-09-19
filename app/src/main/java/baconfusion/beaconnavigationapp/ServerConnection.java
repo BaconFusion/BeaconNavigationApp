@@ -41,4 +41,8 @@ public class ServerConnection {
             e.printStackTrace();
         }
     }
+
+    public void sendCalibrationData(ArrayList<Float> keys, ArrayList<Float> values){
+        // doesnt do anything till now
+    }
 }

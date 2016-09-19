@@ -160,7 +160,13 @@ public class MainActivity extends Activity implements BeaconConsumer {
     }
 
     public void onCalibrationClicked(View view){
+        String ip = ((EditText)findViewById(R.id.editText_ip)).getText().toString();
+        String port_s = ((EditText)findViewById(R.id.editText_port)).getText().toString();
+
         Intent intent = new Intent(this,  CalibrationActivity.class);
+        intent.putExtra("EXTRA_IP",ip);
+        intent.putExtra("EXTRA_PORT",port_s);
+        intent.putExtra("EXTRA_LISTSIZE",beaconList.size());
         startActivity(intent);
     }
 
