@@ -1,4 +1,4 @@
-package org.altbeacon.beaconreference;
+package baconfusion.beaconnavigationapp;
 
 import android.Manifest;
 
@@ -36,10 +36,12 @@ import java.io.FileReader;
 import android.os.Environment;
 import java.util.Calendar;
 
+import baconfusion.beaconnavigationapp.R;
+
 /**
  * Created by fabiola on 15.09.16.
  */
-public class CallibratingActivity extends Activity implements BeaconConsumer {
+public class CalibrationActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "CallibratingActivity";
     private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
     private int sum = 0;
@@ -52,7 +54,7 @@ public class CallibratingActivity extends Activity implements BeaconConsumer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_callibrating);
+        setContentView(R.layout.activity_calibrating);
     }
 
     @Override
@@ -136,11 +138,11 @@ public class CallibratingActivity extends Activity implements BeaconConsumer {
         SharedPreferences.Editor editor = constants.edit();
         String key = "rssi_"+distance+"meter";
         editor.putInt(key, sum/counter);
-        editor.commit();
+        editor.apply();
 
         //Lets see the value, just for checking
         int consta = constants.getInt(key,0);
-        EditText editText = (EditText) CallibratingActivity.this.findViewById(R.id.onemeter);
+        EditText editText = (EditText) CalibrationActivity.this.findViewById(R.id.onemeter);
         editText.setText("RSSI in "+distance+" meter: "+Integer.toString(consta));
 
         file.delete();
@@ -227,7 +229,7 @@ public class CallibratingActivity extends Activity implements BeaconConsumer {
     private void logToDisplay(final String line) {
         runOnUiThread(new Runnable() {
             public void run() {
-                EditText editText = (EditText) CallibratingActivity.this.findViewById(R.id.calli_events);
+                EditText editText = (EditText) CalibrationActivity.this.findViewById(R.id.calli_events);
                 editText.setText(line);
             }
         });
