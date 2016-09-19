@@ -32,12 +32,12 @@ public class BeaconListAdapter
         TextView beaconUUID = (TextView)view.findViewById(R.id.list_item_uuid);
         TextView beaconMajor = (TextView)view.findViewById(R.id.list_item_major);
         TextView beaconMinor = (TextView)view.findViewById(R.id.list_item_minor);
-        TextView beaconRSSI = (TextView)view.findViewById(R.id.list_item_rssi);
+        TextView beaconDistance = (TextView)view.findViewById(R.id.list_item_distance);
         Beacon beacon = this.beaconList.get(position);
         beaconUUID.setText("uuid: " + beacon.getId1());
         beaconMajor.setText("major: " + beacon.getId2());
         beaconMinor.setText("minor: " + beacon.getId3());
-        beaconRSSI.setText("rssi: " + beacon.getRssi());
+        beaconDistance.setText("distance: " + DistanceCalculator.calculateDistance(beacon.getRssi()) + "m \t\t (RSSI: " + beacon.getRssi() + ")");
 
         return view;
     }

@@ -25,6 +25,7 @@ import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.altbeacon.beacon.service.RangedBeacon;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +44,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
     ArrayList<Beacon> beaconList = new ArrayList<>();
     public BeaconListAdapter beaconListAdapter;
 
-    ServerConnection serverConnection = null;
+    private SensorListener sensorListener;
+
 
     public RangeNotifier rangeNotifier = new RangeNotifier() {
         @Override
@@ -58,8 +60,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
                     beaconListAdapter.notifyDataSetChanged();
                 }
             });
-            if(serverConnection != null){
-                serverConnection.sendBeacons(beaconList);
+            if(ServerConnection.isConnected()){
+                ServerConnection.sendBeacons(beaconList);
             }
         }
     };
@@ -95,6 +97,13 @@ public class MainActivity extends Activity implements BeaconConsumer {
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
+        beaconManager.setForegroundBetweenScanPeriod(500);
+        beaconManager.setForegroundScanPeriod(500);
+//        try {
+//            beaconManager.updateScanPeriods();
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
 
 
         //init list + adapter
@@ -104,6 +113,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
         loadPreferences();
         DistanceCalculator.init(this);
+        sensorListener = new SensorListener(this);
     }
 
     @Override
@@ -118,8 +128,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
         super.onPause();
         if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
 
-        savePreferences();
-
     }
 
     @Override
@@ -127,6 +135,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
         super.onDestroy();
         beaconManager.unbind(this);
 
+        savePreferences();
+        sensorListener.unregister();
     }
 
 
@@ -150,7 +160,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
         String port_s = ((EditText)findViewById(R.id.editText_port)).getText().toString();
         int port = (port_s.equals("")? 0 : Integer.parseInt(port_s));
         try {
-            serverConnection = new ServerConnection(ip, port);
+            ServerConnection.connect(ip, port);
 
         } catch (IOException e) {
             e.printStackTrace();

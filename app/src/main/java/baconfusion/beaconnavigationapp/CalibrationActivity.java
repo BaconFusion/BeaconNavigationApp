@@ -51,7 +51,6 @@ public class CalibrationActivity extends Activity implements BeaconConsumer {
     private int counter = 1;
     private ArrayList<Float> keys = new ArrayList<Float>();
     private ArrayList<Float> values = new ArrayList<Float>();
-    private ServerConnection serverConnection;
     private String ip;
     private String port;
     private int num_beacons;
@@ -122,8 +121,6 @@ public class CalibrationActivity extends Activity implements BeaconConsumer {
         // adding iBeacon Format to Library:
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
-
-
     }
 
 
@@ -216,8 +213,7 @@ public class CalibrationActivity extends Activity implements BeaconConsumer {
     }
 
     public void sendCalibrationData(View view) throws IOException{
-        serverConnection = new ServerConnection(ip, Integer.parseInt(port));
-        serverConnection.sendCalibrationData(keys,values);
+        ServerConnection.sendCalibrationData(keys,values);
     }
 
     private void logToDisplay(final String line) {
