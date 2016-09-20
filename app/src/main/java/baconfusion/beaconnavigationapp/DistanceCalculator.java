@@ -31,10 +31,10 @@ public class DistanceCalculator {
         editor.apply();
     }
 
-    public static void update(float a2, float b2, float c2){
-        a = a2;
-        b = b2;
-        c = c2;
+    public static void update(float a, float b, float c){
+        DistanceCalculator.a = a;
+        DistanceCalculator.b = b;
+        DistanceCalculator.c = c;
         SharedPreferences.Editor editor = activityReference.getPreferences(Context.MODE_PRIVATE).edit();
         editor.putFloat(activityReference.getString(R.string.save_var_a), a);
         editor.putFloat(activityReference.getString(R.string.save_var_b), b);

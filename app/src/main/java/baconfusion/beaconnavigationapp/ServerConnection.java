@@ -16,15 +16,23 @@ import java.util.ArrayList;
 /**
  * Created by Stefan on 15-Sep-16.
  */
-public class ServerConnection {
+public class ServerConnection implements Runnable {
 
     private static Socket socket;
     private static DataOutputStream dos;
     private static DataInputStream dis;
     private static boolean connected = false;
 
-    public static void connect(String ip, int port) throws IOException {
+    private static Thread thread;
+    private static PositionNotifier positionNotifier = new PositionNotifier() {
+        @Override
+        public void onDataArrived(float x, float y) {
+            // empty
+        }
+    };
 
+
+    public static void connect(String ip, int port) throws IOException {
         // :(
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -35,7 +43,25 @@ public class ServerConnection {
         dos = new DataOutputStream(socket.getOutputStream());
         dis = new DataInputStream(socket.getInputStream());
 
+
+        thread = new Thread(new ServerConnection());
+        thread.start();
+
         connected = true;
+    }
+
+    public static void disconnect(){
+        try {
+            socket.close();
+            thread.join();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        connected = false;
     }
 
 
@@ -90,10 +116,38 @@ public class ServerConnection {
     }
 
 
+    @Override
+    public void run() {
+        try {
+            while(connected){
+                switch(dis.readByte()){
+                    case 0:
+                        receivePosition();
+                        break;
+                    case 1:
+                        receiveCalibrationResult();
+                }
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void receivePosition(){
+        try {
+            float x = dis.readFloat();
+            float y = dis.readFloat();
+
+            positionNotifier.onDataArrived(x, y);
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
 
     public static void receiveCalibrationResult(){
         try {
-            assert(dis.readByte() == 1);
 
             float a = dis.readFloat();
             float b = dis.readFloat();
@@ -106,16 +160,10 @@ public class ServerConnection {
         }
     }
 
-    public static float[] receivePosition(){
-        try {
-            assert(dis.readByte() == 0);
-            float[] position = {dis.readFloat(), dis.readFloat()};
-            return position;
 
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        return null;
+    public static void setPositionNotifier(PositionNotifier positionNotifier){
+        ServerConnection.positionNotifier = positionNotifier;
+
     }
 
     public static boolean isConnected(){

@@ -13,10 +13,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.altbeacon.beacon.Beacon;
@@ -96,14 +98,9 @@ public class MainActivity extends Activity implements BeaconConsumer {
         // adding iBeacon Format to Library:
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-        beaconManager.bind(this);
         beaconManager.setForegroundBetweenScanPeriod(500);
         beaconManager.setForegroundScanPeriod(500);
-//        try {
-//            beaconManager.updateScanPeriods();
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+        beaconManager.bind(this);
 
 
         //init list + adapter
@@ -113,7 +110,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
         loadPreferences();
         DistanceCalculator.init(this);
-        sensorListener = new SensorListener(this);
     }
 
     @Override
@@ -136,7 +132,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
         beaconManager.unbind(this);
 
         savePreferences();
-        sensorListener.unregister();
+        if(sensorListener != null) sensorListener.unregister();
     }
 
 
@@ -156,16 +152,39 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
 
     public void onConnectClicked(View view){
-        String ip = ((EditText)findViewById(R.id.editText_ip)).getText().toString();
-        String port_s = ((EditText)findViewById(R.id.editText_port)).getText().toString();
-        int port = (port_s.equals("")? 0 : Integer.parseInt(port_s));
-        try {
-            ServerConnection.connect(ip, port);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Couldn't establish connection.",
-                    Toast.LENGTH_LONG).show();
+        Button button = (Button) findViewById(R.id.button_connect);
+
+        if(ServerConnection.isConnected()) {
+            ServerConnection.disconnect();
+            button.setText("connect");
+            Toast.makeText(this, "Disconnected from server.",
+                    Toast.LENGTH_SHORT).show();
+
+        } else{
+            String ip = ((EditText) findViewById(R.id.editText_ip)).getText().toString();
+            String port_s = ((EditText) findViewById(R.id.editText_port)).getText().toString();
+            int port = (port_s.equals("") ? 0 : Integer.parseInt(port_s));
+            try {
+                ServerConnection.connect(ip, port);
+                ServerConnection.setPositionNotifier(new PositionNotifier() {
+                    @Override
+                    public void onDataArrived(float x, float y) {
+                        TextView tv = (TextView) findViewById(R.id.text_position);
+                        tv.setText("x: " + x + " ,y: " + y);
+                    }
+                });
+
+                button.setText("disconnect");
+                Toast.makeText(this, "Established connection to server.",
+                        Toast.LENGTH_SHORT).show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Couldn't establish connection.",
+                        Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
@@ -178,6 +197,11 @@ public class MainActivity extends Activity implements BeaconConsumer {
         intent.putExtra("EXTRA_PORT",port_s);
         intent.putExtra("EXTRA_LISTSIZE",beaconList.size());
         startActivity(intent);
+    }
+
+    public void onStartSensorsClicked(View view){
+        sensorListener = new SensorListener(this);
+
     }
 
 

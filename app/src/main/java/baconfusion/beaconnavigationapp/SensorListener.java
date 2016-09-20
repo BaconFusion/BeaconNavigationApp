@@ -55,4 +55,6 @@ public class SensorListener implements SensorEventListener{
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+
 }
