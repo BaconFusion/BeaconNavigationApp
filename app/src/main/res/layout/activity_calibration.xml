@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/activity_callibrating"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/calibration_textView_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="17dp"
+        android:text="Calibration"
+        android:layout_weight="0.05"
+        android:layout_gravity="center_horizontal" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="beacon data"
+        android:id="@+id/calibration_textView_beacon"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.05" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="beacon rssi"
+        android:id="@+id/calibration_textView_rssi"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.05" />
+
+    <TextView
+        android:layout_width="364dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="17dp"
+
+        android:text="The first measurement is always at 1 meter distance and mandatory. Enter the other distances at which you want to measure as a comma separated list:"
+        android:id="@+id/calibration_textView_distance" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="2, 5, 20, 30.5"
+
+        android:id="@+id/calibration_editText_distance"
+        android:layout_weight="0.05" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="After starting the calibration you will be prompted to position your device at each of the entered distances. Clicking &apos;OK&apos; will start the calibration.\nDo not move the device until the countdown ended and the next prompt appeared."
+        android:id="@+id/calibration_textView_description"
+        android:layout_weight="0.05" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="countdown"
+        android:id="@+id/calibration_textView_countdown"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.05" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Calibration"
+        android:id="@+id/calibration_button_start"
+        android:layout_weight="0.05"
+        android:onClick="startCalibration"
+        android:layout_gravity="center_horizontal" />
+
+
+</LinearLayout>

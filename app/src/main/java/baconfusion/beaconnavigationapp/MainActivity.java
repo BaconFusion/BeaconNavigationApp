@@ -39,6 +39,7 @@ import java.util.Collection;
  */
 public class MainActivity extends Activity implements BeaconConsumer {
 	public static final String LAYOUT_IBEACON = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
+    public static final int BEACON_SCAN_INTERVALL = 500;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final String TAG = "MainActivity";
 
@@ -98,8 +99,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
         // adding iBeacon Format to Library:
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(LAYOUT_IBEACON));
-        beaconManager.setForegroundBetweenScanPeriod(500);
-        beaconManager.setForegroundScanPeriod(500);
+        beaconManager.setForegroundBetweenScanPeriod(BEACON_SCAN_INTERVALL);
+        beaconManager.setForegroundScanPeriod(BEACON_SCAN_INTERVALL);
         beaconManager.bind(this);
 
 
@@ -189,13 +190,24 @@ public class MainActivity extends Activity implements BeaconConsumer {
     }
 
     public void onCalibrationClicked(View view){
-        String ip = ((EditText)findViewById(R.id.editText_ip)).getText().toString();
-        String port_s = ((EditText)findViewById(R.id.editText_port)).getText().toString();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Beacon for Calibration");
+        builder.setMessage("Please select a beacon by holding it close to your device, removing others from the immediate vicinity and clicking \"OK\" afterwards.");
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startCalibration(beaconList.get(0));
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.show();
+    }
 
-        Intent intent = new Intent(this,  CalibrationActivity.class);
-        intent.putExtra("EXTRA_IP",ip);
-        intent.putExtra("EXTRA_PORT",port_s);
-        intent.putExtra("EXTRA_LISTSIZE",beaconList.size());
+    private void startCalibration(Beacon beacon){
+        Intent intent = new Intent(this, CalibrationActivity.class);
+        intent.putExtra(getString(R.string.intent_extra_uuid), beacon.getId1().toString());
+        intent.putExtra(getString(R.string.intent_extra_major), beacon.getId2().toString());
+        intent.putExtra(getString(R.string.intent_extra_minor), beacon.getId3().toString());
         startActivity(intent);
     }
 
@@ -254,8 +266,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_COARSE_LOCATION: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -266,11 +277,10 @@ public class MainActivity extends Activity implements BeaconConsumer {
                     builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
                     builder.setPositiveButton(android.R.string.ok, null);
                     builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
                         @Override
                         public void onDismiss(DialogInterface dialog) {
-                        }
 
+                        }
                     });
                     builder.show();
                 }

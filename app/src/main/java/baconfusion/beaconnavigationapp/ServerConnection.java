@@ -26,7 +26,6 @@ public class ServerConnection implements Runnable {
     private static Socket socket;
     private static DataOutputStream dos;
     private static DataInputStream dis;
-    private static boolean connected = false;
 
     private static Thread thread;
     private static PositionNotifier positionNotifier = new PositionNotifier() {
@@ -52,7 +51,6 @@ public class ServerConnection implements Runnable {
         thread = new Thread(new ServerConnection());
         thread.start();
 
-        connected = true;
     }
 
     public static void disconnect(){
@@ -65,12 +63,10 @@ public class ServerConnection implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        connected = false;
     }
 
 
-    public static void sendBeacons(ArrayList<Beacon> beaconList) {
+    public static synchronized void sendBeacons(ArrayList<Beacon> beaconList) {
         try {
             dos.writeByte(MODUS_BEACON_BROADCAST);
             dos.writeShort((short) beaconList.size());
@@ -88,7 +84,7 @@ public class ServerConnection implements Runnable {
         }
     }
 
-    public static void sendCalibrationData(ArrayList<Float> distance, ArrayList<Float> averageRSSI){
+    public static synchronized void sendCalibrationData(ArrayList<Float> distance, ArrayList<Float> averageRSSI){
         try {
             dos.writeByte(MODUS_BEACON_CALIBRATE);
             dos.writeByte((byte) distance.size());
@@ -103,7 +99,7 @@ public class ServerConnection implements Runnable {
         }
     }
 
-    public static void sendSensorData(byte dataType, float[] data){
+    public static synchronized void sendSensorData(byte dataType, float[] data){
         try {
             dos.writeByte(MODUS_SMARTPHONE_SENSORS);
             dos.writeByte(dataType);
@@ -122,7 +118,7 @@ public class ServerConnection implements Runnable {
     @Override
     public void run() {
         try {
-            while(connected){
+            while(socket.isConnected()){
                 switch(dis.readByte()){
                     case MODUS_BEACON_BROADCAST:
                         receivePosition();
@@ -170,7 +166,7 @@ public class ServerConnection implements Runnable {
     }
 
     public static boolean isConnected(){
-        return connected;
+        return (socket != null && socket.isConnected());
     }
 
 }
