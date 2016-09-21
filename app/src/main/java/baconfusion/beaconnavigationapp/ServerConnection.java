@@ -18,6 +18,11 @@ import java.util.ArrayList;
  */
 public class ServerConnection implements Runnable {
 
+	public static final byte MODUS_BEACON_BROADCAST = 0;
+	public static final byte MODUS_BEACON_CALIBRATE = 1;
+	public static final byte MODUS_SMARTPHONE_SENSORS = 2;
+	
+	
     private static Socket socket;
     private static DataOutputStream dos;
     private static DataInputStream dis;
@@ -67,7 +72,7 @@ public class ServerConnection implements Runnable {
 
     public static void sendBeacons(ArrayList<Beacon> beaconList) {
         try {
-            dos.writeByte(0);
+            dos.writeByte(MODUS_BEACON_BROADCAST);
             dos.writeShort((short) beaconList.size());
             for (Beacon beacon : beaconList) {
                 dos.write(beacon.getId1().toByteArray(), 0, 16);
@@ -83,26 +88,24 @@ public class ServerConnection implements Runnable {
         }
     }
 
-    public static void sendCalibrationData(ArrayList<Float> keys, ArrayList<Float> values){
+    public static void sendCalibrationData(ArrayList<Float> distance, ArrayList<Float> averageRSSI){
         try {
-            dos.writeByte(1);
-            dos.writeByte((byte) keys.size());
+            dos.writeByte(MODUS_BEACON_CALIBRATE);
+            dos.writeByte((byte) distance.size());
 
-            for(int i=0; i<keys.size();i++) {
-                dos.writeFloat(keys.get(i));
-                dos.writeFloat(values.get(i));
+            for(int i=0; i<distance.size();i++) {
+                dos.writeFloat(distance.get(i));
+                dos.writeFloat(averageRSSI.get(i));
             }
 
         }catch(IOException e){
             e.printStackTrace();
         }
-
-        receiveCalibrationResult();
     }
 
     public static void sendSensorData(byte dataType, float[] data){
         try {
-            dos.writeByte(2);
+            dos.writeByte(MODUS_SMARTPHONE_SENSORS);
             dos.writeByte(dataType);
             dos.writeByte((byte) data.length);
 
@@ -121,10 +124,10 @@ public class ServerConnection implements Runnable {
         try {
             while(connected){
                 switch(dis.readByte()){
-                    case 0:
+                    case MODUS_BEACON_BROADCAST:
                         receivePosition();
                         break;
-                    case 1:
+                    case MODUS_BEACON_CALIBRATE:
                         receiveCalibrationResult();
                 }
             }

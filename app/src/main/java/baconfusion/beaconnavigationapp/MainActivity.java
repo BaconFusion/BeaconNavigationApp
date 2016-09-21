@@ -38,7 +38,7 @@ import java.util.Collection;
  * Created by Stefan on 15-Sep-16.
  */
 public class MainActivity extends Activity implements BeaconConsumer {
-
+	public static final String LAYOUT_IBEACON = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final String TAG = "MainActivity";
 
@@ -97,7 +97,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
         // adding iBeacon Format to Library:
         beaconManager = BeaconManager.getInstanceForApplication(this);
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(LAYOUT_IBEACON));
         beaconManager.setForegroundBetweenScanPeriod(500);
         beaconManager.setForegroundScanPeriod(500);
         beaconManager.bind(this);
@@ -245,12 +245,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
     @Override
     public void onBeaconServiceConnect() {
         beaconManager.setRangeNotifier(rangeNotifier);
-
-        try {
-            beaconManager.startRangingBeaconsInRegion(new Region("f7826da6-4fa2-4e98-8024-bc5b71e0893e", null, null, null));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
 

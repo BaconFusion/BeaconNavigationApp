@@ -13,7 +13,7 @@ public class DistanceCalculator {
     private static float a, b, c, oneMeterReferenceRSSI;
     private static boolean initialized = false;
     private static Activity activityReference;
-
+	
     public static void init(Activity activity){
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
         a = sharedPref.getFloat(activity.getString(R.string.save_var_a), 0);
