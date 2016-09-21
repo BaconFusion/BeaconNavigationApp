@@ -245,6 +245,11 @@ public class MainActivity extends Activity implements BeaconConsumer {
     @Override
     public void onBeaconServiceConnect() {
         beaconManager.setRangeNotifier(rangeNotifier);
+        try {
+            beaconManager.startRangingBeaconsInRegion(new Region("...", null, null, null));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
 

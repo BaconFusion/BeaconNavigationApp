@@ -78,8 +78,8 @@ public class ServerConnection implements Runnable {
                 dos.write(beacon.getId1().toByteArray(), 0, 16);
                 dos.write(beacon.getId2().toByteArray(), 0, 2);
                 dos.write(beacon.getId3().toByteArray(), 0, 2);
-
-                dos.writeFloat(DistanceCalculator.calculateDistance(beacon.getRssi()));
+//DistanceCalculator.calculateDistance(beacon.getRssi())
+                dos.writeFloat((float)beacon.getDistance());
             }
             dos.writeLong(System.currentTimeMillis());
 
