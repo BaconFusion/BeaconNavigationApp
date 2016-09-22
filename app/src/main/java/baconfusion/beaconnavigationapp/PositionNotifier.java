@@ -5,6 +5,6 @@ package baconfusion.beaconnavigationapp;
  */
 public interface PositionNotifier {
 
-    void onDataArrived(float x, float y);
+    void onDataArrived(float x, float y, float[] b_x, float[] b_y, int[] b_i);
 
 }

@@ -170,7 +170,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
                 ServerConnection.connect(ip, port);
                 ServerConnection.setPositionNotifier(new PositionNotifier() {
                     @Override
-                    public void onDataArrived(float x, float y) {
+                    public void onDataArrived(float x, float y, float[] b_x, float[] b_y, int[] b_i) {
                         TextView tv = (TextView) findViewById(R.id.text_position);
                         tv.setText("x: " + x + " ,y: " + y);
                     }

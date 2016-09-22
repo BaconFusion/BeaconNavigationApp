@@ -30,7 +30,7 @@ public class ServerConnection implements Runnable {
     private static Thread thread;
     private static PositionNotifier positionNotifier = new PositionNotifier() {
         @Override
-        public void onDataArrived(float x, float y) {
+        public void onDataArrived(float x, float y, float[] b_x, float[] b_y, int[] b_i) {
             // empty
         }
     };
@@ -74,8 +74,8 @@ public class ServerConnection implements Runnable {
                 dos.write(beacon.getId1().toByteArray(), 0, 16);
                 dos.write(beacon.getId2().toByteArray(), 0, 2);
                 dos.write(beacon.getId3().toByteArray(), 0, 2);
-//DistanceCalculator.calculateDistance(beacon.getRssi())
-                dos.writeFloat((float)beacon.getDistance());
+                DistanceCalculator.calculateDistance(beacon.getRssi());
+               // dos.writeFloat((float)beacon.getDistance());
             }
             dos.writeLong(System.currentTimeMillis());
 
@@ -132,12 +132,23 @@ public class ServerConnection implements Runnable {
         }
     }
 
+    //Position from Mobile Device
     public static void receivePosition(){
         try {
+
             float x = dis.readFloat();
             float y = dis.readFloat();
 
-            positionNotifier.onDataArrived(x, y);
+            byte len = dis.readByte();
+            float[] b_x = new float[len];
+            float[] b_y = new float[len];
+            int[] b_i = new int[len];
+            for(int i=0; i<len; i++) {
+                b_x[i] = dis.readFloat();
+                b_y[i] = dis.readFloat();
+                b_i[i] = dis.readInt();
+            }
+            positionNotifier.onDataArrived(x, y, b_x, b_y, b_i);
 
         }catch(IOException e){
             e.printStackTrace();
@@ -151,7 +162,7 @@ public class ServerConnection implements Runnable {
             float b = dis.readFloat();
             float c = dis.readFloat();
             float d = dis.readFloat();
-            
+
             DistanceCalculator.update(a, b, c, d);
 
         }catch(IOException e){
