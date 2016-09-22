@@ -53,7 +53,7 @@ public class ServerConnection implements Runnable {
 
     }
 
-    public static void disconnect(){
+    public static synchronized void disconnect(){
         try {
             socket.close();
             thread.join();
