@@ -146,13 +146,13 @@ public class ServerConnection implements Runnable {
 
 
     public static void receiveCalibrationResult(){
-        try {
-
+       try {
             float a = dis.readFloat();
             float b = dis.readFloat();
             float c = dis.readFloat();
-
-            DistanceCalculator.update(a, b, c);
+            float d = dis.readFloat();
+            
+            DistanceCalculator.update(a, b, c, d);
 
         }catch(IOException e){
             e.printStackTrace();

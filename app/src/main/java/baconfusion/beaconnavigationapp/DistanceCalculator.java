@@ -10,7 +10,7 @@ import android.app.Activity;
  */
 public class DistanceCalculator {
 
-    private static float a, b, c, oneMeterReferenceRSSI;
+    private static float a, b, c, d, oneMeterReferenceRSSI;
     private static boolean initialized = false;
     private static Activity activityReference;
 	
@@ -19,6 +19,7 @@ public class DistanceCalculator {
         a = sharedPref.getFloat(activity.getString(R.string.save_var_a), 0);
         b = sharedPref.getFloat(activity.getString(R.string.save_var_b), 0);
         c = sharedPref.getFloat(activity.getString(R.string.save_var_c), 0);
+        d = sharedPref.getFloat(activity.getString(R.string.save_var_d), 0);
         oneMeterReferenceRSSI = sharedPref.getFloat(activity.getString(R.string.save_var_oneMeterReferenceRSSI), 1);
         activityReference = activity;
         initialized = true;
@@ -31,20 +32,23 @@ public class DistanceCalculator {
         editor.apply();
     }
 
-    public static void update(float a, float b, float c){
+    public static void update(float a, float b, float c, float d){
         DistanceCalculator.a = a;
         DistanceCalculator.b = b;
         DistanceCalculator.c = c;
+        DistanceCalculator.d = d;
         SharedPreferences.Editor editor = activityReference.getPreferences(Context.MODE_PRIVATE).edit();
         editor.putFloat(activityReference.getString(R.string.save_var_a), a);
         editor.putFloat(activityReference.getString(R.string.save_var_b), b);
         editor.putFloat(activityReference.getString(R.string.save_var_c), c);
+        editor.putFloat(activityReference.getString(R.string.save_var_d), d);
         editor.apply();
     }
 
 
     public static float calculateDistance(int rssi){
         assert(initialized);
-        return (float) (a * Math.pow( rssi / oneMeterReferenceRSSI, b) + c);
+        return (float) (a*Math.pow(rssi, 3)+ b*Math.pow(rssi,2) + c*Math.pow(rssi,1) + d);
+        //(a * Math.pow( rssi / oneMeterReferenceRSSI, b) + c);
     }
 }
