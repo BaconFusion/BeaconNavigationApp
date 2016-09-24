@@ -24,6 +24,7 @@ public class SimpleKalman implements RssiFilter {
     void addMeasurement(double measurement) {
         if (noMeasurementsAvailable()) {
             x = measurement;
+            noMeasurements = false;
             return;
         }
         //prediction update

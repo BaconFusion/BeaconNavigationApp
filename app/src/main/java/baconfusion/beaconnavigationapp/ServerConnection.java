@@ -1,7 +1,6 @@
 package baconfusion.beaconnavigationapp;
 
 import android.os.StrictMode;
-import android.util.FloatMath;
 
 import org.altbeacon.beacon.Beacon;
 
@@ -10,7 +9,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
@@ -70,14 +68,15 @@ public class ServerConnection implements Runnable {
         try {
             dos.writeByte(MODUS_BEACON_BROADCAST);
             dos.writeShort((short) beaconList.size());
+            dos.writeLong(System.currentTimeMillis());
             for (Beacon beacon : beaconList) {
                 dos.write(beacon.getId1().toByteArray(), 0, 16);
                 dos.write(beacon.getId2().toByteArray(), 0, 2);
                 dos.write(beacon.getId3().toByteArray(), 0, 2);
-                DistanceCalculator.calculateDistance(beacon.getRssi());
-               // dos.writeFloat((float)beacon.getDistance());
+                //DistanceCalculator.calculateDistance(beacon.getRssi());
+                dos.writeFloat((float) beacon.getRssi());
+                //dos.writeFloat((float)beacon.getDistance());
             }
-            dos.writeLong(System.currentTimeMillis());
 
         }catch(IOException e){
             e.printStackTrace();
@@ -114,26 +113,8 @@ public class ServerConnection implements Runnable {
         }
     }
 
-
-    @Override
-    public void run() {
-        try {
-            while(socket.isConnected()){
-                switch(dis.readByte()){
-                    case MODUS_BEACON_BROADCAST:
-                        receivePosition();
-                        break;
-                    case MODUS_BEACON_CALIBRATE:
-                        receiveCalibrationResult();
-                }
-            }
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
     //Position from Mobile Device
-    public static void receivePosition(){
+    public static void receivePosition() {
         try {
 
             float x = dis.readFloat();
@@ -143,21 +124,20 @@ public class ServerConnection implements Runnable {
             float[] b_x = new float[len];
             float[] b_y = new float[len];
             int[] b_i = new int[len];
-            for(int i=0; i<len; i++) {
+            for (int i = 0; i < len; i++) {
                 b_x[i] = dis.readFloat();
                 b_y[i] = dis.readFloat();
                 b_i[i] = dis.readInt();
             }
             positionNotifier.onDataArrived(x, y, b_x, b_y, b_i);
 
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-    public static void receiveCalibrationResult(){
-       try {
+    public static void receiveCalibrationResult() {
+        try {
             float a = dis.readFloat();
             float b = dis.readFloat();
             float c = dis.readFloat();
@@ -170,7 +150,6 @@ public class ServerConnection implements Runnable {
         }
     }
 
-
     public static void setPositionNotifier(PositionNotifier positionNotifier){
         ServerConnection.positionNotifier = positionNotifier;
 
@@ -178,6 +157,23 @@ public class ServerConnection implements Runnable {
 
     public static boolean isConnected(){
         return (socket != null && socket.isConnected());
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (socket.isConnected()) {
+                switch (dis.readByte()) {
+                    case MODUS_BEACON_BROADCAST:
+                        receivePosition();
+                        break;
+                    case MODUS_BEACON_CALIBRATE:
+                        receiveCalibrationResult();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

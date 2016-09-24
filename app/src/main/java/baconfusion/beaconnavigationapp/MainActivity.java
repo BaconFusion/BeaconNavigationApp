@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import baconfusion.beaconnavigationapp.filters.SimpleKalman;
+import baconfusion.beaconnavigationapp.filters.StupidFilter;
 
 
 /**
@@ -39,7 +39,7 @@ import baconfusion.beaconnavigationapp.filters.SimpleKalman;
  */
 public class MainActivity extends Activity implements BeaconConsumer {
 	public static final String LAYOUT_IBEACON = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
-    public static final int BEACON_SCAN_INTERVALL = 500;
+    public static final int BEACON_SCAN_INTERVALL = 100;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final String TAG = "MainActivity";
     public BeaconListAdapter beaconListAdapter;
@@ -49,11 +49,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
         public void didRangeBeaconsInRegion(final Collection<Beacon> beacons, Region region) {
             if(beacons.size() == 0)
                 return;
-            for (Beacon b :
-                    beacons) {
-                //org.altbeacon.beacon.service.
-                //org.altbeacon.beacon.service.
-            }
             beaconList.clear();
             beaconList.addAll(beacons);
             runOnUiThread(new Runnable() {
@@ -96,7 +91,9 @@ public class MainActivity extends Activity implements BeaconConsumer {
             }
         }
 
-        BeaconManager.setRssiFilterImplClass(SimpleKalman.class);
+        //BeaconManager.setRssiFilterImplClass(org.altbeacon.beacon.service.ArmaRssiFilter.class);
+        //BeaconManager.setRssiFilterImplClass(SimpleKalman.class);
+        BeaconManager.setRssiFilterImplClass(StupidFilter.class);
 
         // adding iBeacon layout to Library:
         beaconManager = BeaconManager.getInstanceForApplication(this);
