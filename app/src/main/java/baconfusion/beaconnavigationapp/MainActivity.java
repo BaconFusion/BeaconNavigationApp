@@ -13,11 +13,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,11 +26,12 @@ import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
-import org.altbeacon.beacon.service.RangedBeacon;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import baconfusion.beaconnavigationapp.filters.SimpleKalman;
 
 
 /**
@@ -42,19 +42,18 @@ public class MainActivity extends Activity implements BeaconConsumer {
     public static final int BEACON_SCAN_INTERVALL = 500;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final String TAG = "MainActivity";
-
-    private BeaconManager beaconManager;
-    ArrayList<Beacon> beaconList = new ArrayList<>();
     public BeaconListAdapter beaconListAdapter;
-
-    private SensorListener sensorListener;
-
-
+    ArrayList<Beacon> beaconList = new ArrayList<>();
     public RangeNotifier rangeNotifier = new RangeNotifier() {
         @Override
         public void didRangeBeaconsInRegion(final Collection<Beacon> beacons, Region region) {
             if(beacons.size() == 0)
                 return;
+            for (Beacon b :
+                    beacons) {
+                //org.altbeacon.beacon.service.
+                //org.altbeacon.beacon.service.
+            }
             beaconList.clear();
             beaconList.addAll(beacons);
             runOnUiThread(new Runnable() {
@@ -68,7 +67,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
             }
         }
     };
-
+    private BeaconManager beaconManager;
+    private SensorListener sensorListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +96,9 @@ public class MainActivity extends Activity implements BeaconConsumer {
             }
         }
 
-        // adding iBeacon Format to Library:
+        BeaconManager.setRssiFilterImplClass(SimpleKalman.class);
+
+        // adding iBeacon layout to Library:
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(LAYOUT_IBEACON));
         beaconManager.setForegroundBetweenScanPeriod(BEACON_SCAN_INTERVALL);
