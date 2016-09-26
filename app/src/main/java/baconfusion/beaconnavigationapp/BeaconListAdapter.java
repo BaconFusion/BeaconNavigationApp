@@ -37,7 +37,7 @@ public class BeaconListAdapter
         beaconUUID.setText("uuid: " + beacon.getId1());
         beaconMajor.setText("major: " + beacon.getId2());
         beaconMinor.setText("minor: " + beacon.getId3());
-        beaconDistance.setText("distance: " + DistanceCalculator.calculateDistance(beacon.getRssi()) + "m \t\t (RSSI: " + beacon.getRssi() + ")");
+        beaconDistance.setText("distance: " + beacon.getDistance() + "m \t\t (RSSI: " + beacon.getRssi() + ")");
 
         return view;
     }
