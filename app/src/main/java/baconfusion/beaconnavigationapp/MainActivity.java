@@ -209,6 +209,10 @@ public class MainActivity extends Activity implements BeaconConsumer {
         startActivity(intent);
     }
 
+    public void onShowPositionClicked(View view){
+        startActivity(new Intent(this, ShowPositionActivity.class));
+    }
+
     public void onStartSensorsClicked(View view){
         sensorListener = new SensorListener(this);
 

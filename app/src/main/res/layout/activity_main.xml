@@ -10,7 +10,8 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:layout_width="0px"
-        android:layout_height="0px"/>
+        android:layout_height="0px"
+        android:id="@+id/linearLayout" />
 
 
     <ListView
@@ -110,6 +111,16 @@
         android:layout_below="@+id/button_connect"
         android:layout_alignParentEnd="true"
         android:layout_toEndOf="@+id/editText_port" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Position"
+        android:onClick="onShowPositionClicked"
+        android:id="@+id/btnShowPosition"
+        android:layout_alignBottom="@+id/button_calibration"
+        android:layout_toEndOf="@+id/linearLayout" />
 
 
 </RelativeLayout>
