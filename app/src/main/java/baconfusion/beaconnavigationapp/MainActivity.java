@@ -90,7 +90,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
                 builder.show();
             }
         }
-
         //BeaconManager.setRssiFilterImplClass(org.altbeacon.beacon.service.ArmaRssiFilter.class);
         //BeaconManager.setRssiFilterImplClass(SimpleKalman.class);
         BeaconManager.setRssiFilterImplClass(StupidFilter.class);
