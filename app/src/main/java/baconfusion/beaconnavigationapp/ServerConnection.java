@@ -74,7 +74,7 @@ public class ServerConnection implements Runnable {
                 dos.write(beacon.getId2().toByteArray(), 0, 2);
                 dos.write(beacon.getId3().toByteArray(), 0, 2);
                 //DistanceCalculator.calculateDistance(beacon.getRssi());
-                dos.writeFloat((float) beacon.getRssi());
+                dos.writeFloat((float) beacon.getDistance());
                 //dos.writeFloat((float)beacon.getDistance());
             }
 
@@ -143,7 +143,10 @@ public class ServerConnection implements Runnable {
             float c = dis.readFloat();
             float d = dis.readFloat();
 
-            DistanceCalculator.update(a, b, c, d);
+            org.altbeacon.beacon.distance.DistanceCalculator dc = new org.altbeacon.beacon.distance.CurveFittedDistanceCalculator(a, b, c);
+            Beacon.setDistanceCalculator(dc);
+
+            //DistanceCalculator.update(a, b, c, d);
 
         }catch(IOException e){
             e.printStackTrace();

@@ -1,9 +1,8 @@
 package baconfusion.beaconnavigationapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import android.app.Activity;
 
 /**
  * Created by Stefan on 16-Sep-16.
@@ -48,7 +47,7 @@ public class DistanceCalculator {
 
     public static float calculateDistance(int rssi){
         assert(initialized);
-        return (float) (a*Math.pow(rssi, 3)+ b*Math.pow(rssi,2) + c*Math.pow(rssi,1) + d);
+        throw new RuntimeException();
         //(a * Math.pow( rssi / oneMeterReferenceRSSI, b) + c);
     }
 }
