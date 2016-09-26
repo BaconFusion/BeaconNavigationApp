@@ -13,10 +13,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.altbeacon.beacon.Beacon;
@@ -30,21 +31,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import baconfusion.beaconnavigationapp.filters.StupidFilter;
+
 
 /**
  * Created by Stefan on 15-Sep-16.
  */
 public class MainActivity extends Activity implements BeaconConsumer {
-
+	public static final String LAYOUT_IBEACON = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
+    public static final int BEACON_SCAN_INTERVALL = 100;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final String TAG = "MainActivity";
-
-    private BeaconManager beaconManager;
-    ArrayList<Beacon> beaconList = new ArrayList<>();
     public BeaconListAdapter beaconListAdapter;
-
-    ServerConnection serverConnection = null;
-
+    ArrayList<Beacon> beaconList = new ArrayList<>();
     public RangeNotifier rangeNotifier = new RangeNotifier() {
         @Override
         public void didRangeBeaconsInRegion(final Collection<Beacon> beacons, Region region) {
@@ -58,12 +57,13 @@ public class MainActivity extends Activity implements BeaconConsumer {
                     beaconListAdapter.notifyDataSetChanged();
                 }
             });
-            if(serverConnection != null){
-                serverConnection.sendBeacons(beaconList);
+            if(ServerConnection.isConnected()){
+                ServerConnection.sendBeacons(beaconList);
             }
         }
     };
-
+    private BeaconManager beaconManager;
+    private SensorListener sensorListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +91,15 @@ public class MainActivity extends Activity implements BeaconConsumer {
             }
         }
 
-        // adding iBeacon Format to Library:
+        //BeaconManager.setRssiFilterImplClass(org.altbeacon.beacon.service.ArmaRssiFilter.class);
+        //BeaconManager.setRssiFilterImplClass(SimpleKalman.class);
+        BeaconManager.setRssiFilterImplClass(StupidFilter.class);
+
+        // adding iBeacon layout to Library:
         beaconManager = BeaconManager.getInstanceForApplication(this);
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(LAYOUT_IBEACON));
+        beaconManager.setForegroundBetweenScanPeriod(BEACON_SCAN_INTERVALL);
+        beaconManager.setForegroundScanPeriod(BEACON_SCAN_INTERVALL);
         beaconManager.bind(this);
 
 
@@ -118,8 +124,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
         super.onPause();
         if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
 
-        savePreferences();
-
     }
 
     @Override
@@ -127,6 +131,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
         super.onDestroy();
         beaconManager.unbind(this);
 
+        savePreferences();
+        if(sensorListener != null) sensorListener.unregister();
     }
 
 
@@ -146,22 +152,67 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
 
     public void onConnectClicked(View view){
-        String ip = ((EditText)findViewById(R.id.editText_ip)).getText().toString();
-        String port_s = ((EditText)findViewById(R.id.editText_port)).getText().toString();
-        int port = (port_s.equals("")? 0 : Integer.parseInt(port_s));
-        try {
-            serverConnection = new ServerConnection(ip, port);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Couldn't establish connection.",
-                    Toast.LENGTH_LONG).show();
+        Button button = (Button) findViewById(R.id.button_connect);
+
+        if(ServerConnection.isConnected()) {
+            ServerConnection.disconnect();
+            button.setText("connect");
+            Toast.makeText(this, "Disconnected from server.",
+                    Toast.LENGTH_SHORT).show();
+
+        } else{
+            String ip = ((EditText) findViewById(R.id.editText_ip)).getText().toString();
+            String port_s = ((EditText) findViewById(R.id.editText_port)).getText().toString();
+            int port = (port_s.equals("") ? 0 : Integer.parseInt(port_s));
+            try {
+                ServerConnection.connect(ip, port);
+                ServerConnection.setPositionNotifier(new PositionNotifier() {
+                    @Override
+                    public void onDataArrived(float x, float y, float[] b_x, float[] b_y, int[] b_i) {
+                        TextView tv = (TextView) findViewById(R.id.text_position);
+                        tv.setText("x: " + x + " ,y: " + y);
+                    }
+                });
+
+                button.setText("disconnect");
+                Toast.makeText(this, "Established connection to server.",
+                        Toast.LENGTH_SHORT).show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Couldn't establish connection.",
+                        Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
     public void onCalibrationClicked(View view){
-        Intent intent = new Intent(this,  CalibrationActivity.class);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Beacon for Calibration");
+        builder.setMessage("Please select a beacon by holding it close to your device, removing others from the immediate vicinity and clicking \"OK\" afterwards.");
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startCalibration(beaconList.get(0));
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.show();
+    }
+
+    private void startCalibration(Beacon beacon){
+        Intent intent = new Intent(this, CalibrationActivity.class);
+        intent.putExtra(getString(R.string.intent_extra_uuid), beacon.getId1().toString());
+        intent.putExtra(getString(R.string.intent_extra_major), beacon.getId2().toString());
+        intent.putExtra(getString(R.string.intent_extra_minor), beacon.getId3().toString());
         startActivity(intent);
+    }
+
+    public void onStartSensorsClicked(View view){
+        sensorListener = new SensorListener(this);
+
     }
 
 
@@ -205,9 +256,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
     @Override
     public void onBeaconServiceConnect() {
         beaconManager.setRangeNotifier(rangeNotifier);
-
         try {
-            beaconManager.startRangingBeaconsInRegion(new Region("f7826da6-4fa2-4e98-8024-bc5b71e0893e", null, null, null));
+            beaconManager.startRangingBeaconsInRegion(new Region("...", null, null, null));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -215,8 +265,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_COARSE_LOCATION: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -227,11 +276,10 @@ public class MainActivity extends Activity implements BeaconConsumer {
                     builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
                     builder.setPositiveButton(android.R.string.ok, null);
                     builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
                         @Override
                         public void onDismiss(DialogInterface dialog) {
-                        }
 
+                        }
                     });
                     builder.show();
                 }

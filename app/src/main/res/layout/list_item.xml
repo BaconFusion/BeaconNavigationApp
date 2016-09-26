@@ -29,5 +29,5 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
-        android:id="@+id/list_item_rssi" />
+        android:id="@+id/list_item_distance" />
 </LinearLayout>
