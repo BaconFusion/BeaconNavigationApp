@@ -63,14 +63,13 @@ public class MainActivity extends Activity implements BeaconConsumer {
         }
     };
     private BeaconManager beaconManager;
-    private SensorListener sensorListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        verifyBluetooth();
+//        verifyBluetooth();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Android M Permission check
             if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -131,7 +130,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
         beaconManager.unbind(this);
 
         savePreferences();
-        if(sensorListener != null) sensorListener.unregister();
     }
 
 
@@ -214,8 +212,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
     }
 
     public void onStartSensorsClicked(View view){
-        sensorListener = new SensorListener(this);
-
+        startActivity(new Intent(this, SensorListActivity.class));
     }
 
 

@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.widget.TextView;
 
 /**
  * Created by Stefan on 19-Sep-16.
@@ -14,11 +15,14 @@ import android.util.Log;
 public class SensorListener implements SensorEventListener{
 
     private static SensorManager sensorManager;
+    private Activity referenceActivity;
 
     private Sensor accelerometer;
 
 
+
     public SensorListener(Activity activity){
+        referenceActivity = activity;
         sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
 
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -41,8 +45,13 @@ public class SensorListener implements SensorEventListener{
 
         switch(event.sensor.getType()){
             case Sensor.TYPE_ACCELEROMETER:
-                //Log.d("SENSOR", Float.toString(event.values[0]));
+
+                ((TextView) referenceActivity.findViewById(R.id.sensorList_textView_acc_0)).setText(Float.toString(event.values[0]));
+                ((TextView) referenceActivity.findViewById(R.id.sensorList_textView_acc_1)).setText(Float.toString(event.values[1]));
+                ((TextView) referenceActivity.findViewById(R.id.sensorList_textView_acc_2)).setText(Float.toString(event.values[2]));
+
                 //ServerConnection.sendSensorData((byte) 0, event.values);
+
                 break;
             case Sensor.TYPE_GYROSCOPE_UNCALIBRATED:
             case Sensor.TYPE_GYROSCOPE:

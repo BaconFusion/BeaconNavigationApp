@@ -22,14 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".beaconreference.MonitoringActivity"
-            android:label="@string/app_name"></activity>
-        <activity
-            android:name=".beaconreference.RangingActivity"
-            android:label="@string/app_name" />
+
         <activity
             android:name=".CalibrationActivity"
+            android:label="@string/app_name"></activity>
+        <activity
+            android:name=".SensorListActivity"
             android:label="@string/app_name"></activity>
         <activity
             android:name=".ShowPositionActivity"
