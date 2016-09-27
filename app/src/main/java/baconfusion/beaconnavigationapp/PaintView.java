@@ -19,6 +19,7 @@ public class PaintView extends View implements PositionNotifier{
         float x, y;
         float[] b_x, b_y;
         int[] b_i;
+        int len = 0;
 
     // public Position pos;
         public static Canvas canvas;
@@ -39,6 +40,7 @@ public class PaintView extends View implements PositionNotifier{
             this.b_x = b_x;
             this.b_y = b_y;
             this.b_i = b_i;
+            this.len = b_i.length;
             invalidate();
         }
 
@@ -61,48 +63,30 @@ public class PaintView extends View implements PositionNotifier{
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(sw);
             paint.setStrokeCap(Paint.Cap.ROUND);
-            paint.setColor(Color.BLACK);
             // x-Achse
             canvas.drawLine(0.0f, heightOfView / 2, widthOfView, heightOfView / 2, paint);
             //y-Achse
             canvas.drawLine(widthOfView / 2, 0, widthOfView / 2, heightOfView, paint);
-
-            //Orientierungspunkte
-            paint.setColor(Color.GREEN);
-            paint.setStrokeWidth(10.0f);
-            //get.Beacons_pos(); Beacons.x, Beacons.y;
-            canvas.drawPoint(0.0f, 0.0f, paint);
-            paint.setColor(Color.RED);
-            canvas.drawPoint(0.0f, heightOfView, paint);
-            paint.setColor(Color.BLUE);
-            canvas.drawPoint(widthOfView, 0.0f, paint);
-
+            paint.setStrokeWidth(5.0f);
+            //widthOfView -= sw;
+            //heightOfView -= sw;
             //nochmal gut skalieren
-            float scale_x = widthOfView / 20;
-            float scale_y = heightOfView / 20;
-            float mid_x = widthOfView / 2;
-            float mid_y = heightOfView / 2;
-            paint.setStrokeWidth(10.0f);
+            float scale_x = (float) widthOfView / 40.0f;
+            float scale_y = (float) heightOfView / 40.0f;
+            float mid_x = (float) widthOfView / 2.0f;
+            float mid_y = (float) heightOfView / 2.0f;
             paint.setColor(Color.RED);
-            //x += 5.0f;
-            //y += -5.0f;
-            //draw for point (5,5
-            //draw own position
-            canvas.drawPoint(mid_x + x, mid_y + y, paint);
-
-            System.out.println("width: " + widthOfView);
-            System.out.println("height: " + heightOfView);
-
+            float draw_x = mid_x + ( x*scale_x);
+            float draw_y = mid_y - ( y*scale_y);
+            canvas.drawPoint(draw_x, draw_y, paint);
             //draw Beacons
             paint.setColor(Color.BLUE);
-            //canvas.drawPoint(mid_x - 30.0f, mid_y - 30.0f, paint);
-            /*int len = b_y.length;
             for(int i = 0; i < len; i++) {
-                float x = mid_x + ( b_x[i] * scale_x);
-                float y = -1 *(mid_y +(b_y[i] * scale_y));
-                canvas.drawPoint(x, y, paint);
+                float x_i = mid_x + ( b_x[i] * scale_x);
+                float y_i = mid_y - ( b_y[i] * scale_y);
+                canvas.drawPoint(x_i, y_i, paint);
                 String ident = ""+b_i[i];
-                canvas.drawText(ident, x, y, paint);
-            }*/
+                canvas.drawText(ident, x_i, y_i, paint);
+            }
         }
 }

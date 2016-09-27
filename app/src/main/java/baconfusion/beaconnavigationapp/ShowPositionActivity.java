@@ -12,7 +12,6 @@ public class ShowPositionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_position);
         pv = (PaintView) findViewById(R.id.view);
-        //pv = new PaintView();customCanvas = (CanvasView) findViewById(R.id.signature_canvas);
        /* float x = 20.0f;
         float y = -20.0f;
         float[] b_x = {0, 1.1f};
