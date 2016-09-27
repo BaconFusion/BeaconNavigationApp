@@ -19,7 +19,6 @@ public class DistanceCalculator {
         float a = sharedPref.getFloat(activity.getString(R.string.save_var_a), 0);
         float b = sharedPref.getFloat(activity.getString(R.string.save_var_b), 0);
         float c = sharedPref.getFloat(activity.getString(R.string.save_var_c), 0);
-        float d = sharedPref.getFloat(activity.getString(R.string.save_var_d), 0);
 
         org.altbeacon.beacon.distance.DistanceCalculator dc = new org.altbeacon.beacon.distance.CurveFittedDistanceCalculator(a, b, c);
         Beacon.setDistanceCalculator(dc);
@@ -28,7 +27,7 @@ public class DistanceCalculator {
         initialized = true;
     }
 
-    public static void update(float a, float b, float c, float d){
+    public static void update(float a, float b, float c) {
 
         org.altbeacon.beacon.distance.DistanceCalculator dc = new org.altbeacon.beacon.distance.CurveFittedDistanceCalculator(a, b, c);
         Beacon.setDistanceCalculator(dc);
@@ -37,14 +36,6 @@ public class DistanceCalculator {
         editor.putFloat(activityReference.getString(R.string.save_var_a), a);
         editor.putFloat(activityReference.getString(R.string.save_var_b), b);
         editor.putFloat(activityReference.getString(R.string.save_var_c), c);
-        editor.putFloat(activityReference.getString(R.string.save_var_d), d);
         editor.apply();
-    }
-
-
-    public static float calculateDistance(int rssi){
-        assert(initialized);
-        throw new RuntimeException();
-        //(a * Math.pow( rssi / oneMeterReferenceRSSI, b) + c);
     }
 }

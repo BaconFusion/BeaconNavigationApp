@@ -137,8 +137,8 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
     private void loadPreferences(){
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        String ip = sharedPref.getString(getString(R.string.save_ip), "0.0.0.0");
-        String port = sharedPref.getString(getString(R.string.save_port), "55666");
+        String ip = sharedPref.getString(getString(R.string.save_ip), "192.168.42.0");
+        String port = sharedPref.getString(getString(R.string.save_port), "6788");
         ((EditText)findViewById(R.id.editText_ip)).setText(ip);
         ((EditText)findViewById(R.id.editText_port)).setText(port);
     }

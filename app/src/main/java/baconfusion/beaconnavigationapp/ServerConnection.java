@@ -2,9 +2,7 @@ package baconfusion.beaconnavigationapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.StrictMode;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.altbeacon.beacon.Beacon;
@@ -148,9 +146,8 @@ public class ServerConnection implements Runnable {
             float a = dis.readFloat();
             float b = dis.readFloat();
             float c = dis.readFloat();
-            float d = dis.readFloat();
 
-            DistanceCalculator.update(a, b, c, d);
+            DistanceCalculator.update(a, b, c);
             calibrationFinishedPopup(a, b, c);
 
         }catch(IOException e){
