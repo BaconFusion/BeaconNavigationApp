@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -35,6 +36,7 @@ public class PaintView extends View implements PositionNotifier{
         }
 
        public void onDataArrived(float x, float y, float[] b_x, float[] b_y, int[] b_i) {
+           Log.d("AAAAYYYYYY" , "UHUHUHUHUHUHUHUHUHUHUHUHUHUHU " + x + " // " + y);
             this.x = x;
             this.y = y;
             this.b_x = b_x;

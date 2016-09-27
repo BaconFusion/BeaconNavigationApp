@@ -1,6 +1,11 @@
 package baconfusion.beaconnavigationapp;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.StrictMode;
+import android.util.Log;
+import android.widget.Toast;
 
 import org.altbeacon.beacon.Beacon;
 
@@ -25,6 +30,8 @@ public class ServerConnection implements Runnable {
     private static DataOutputStream dos;
     private static DataInputStream dis;
 
+    private static Activity activityReference;
+
     private static Thread thread;
     private static PositionNotifier positionNotifier = new PositionNotifier() {
         @Override
@@ -34,7 +41,7 @@ public class ServerConnection implements Runnable {
     };
 
 
-    public static void connect(String ip, int port) throws IOException {
+    public static synchronized void connect(String ip, int port) throws IOException {
         // :(
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -143,19 +150,41 @@ public class ServerConnection implements Runnable {
             float c = dis.readFloat();
             float d = dis.readFloat();
 
-            org.altbeacon.beacon.distance.DistanceCalculator dc = new org.altbeacon.beacon.distance.CurveFittedDistanceCalculator(a, b, c);
-            Beacon.setDistanceCalculator(dc);
-
-            //DistanceCalculator.update(a, b, c, d);
+            DistanceCalculator.update(a, b, c, d);
+            calibrationFinishedPopup(a, b, c);
 
         }catch(IOException e){
             e.printStackTrace();
         }
     }
 
+    private static void calibrationFinishedPopup(final float a, final float b, final float c) {
+        activityReference.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(activityReference, "a=" + a + "\nb=" + b + "\nc=" + c, Toast.LENGTH_LONG).show();
+            }
+        });
+        activityReference.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(activityReference);
+                    builder.setTitle("Finished calibration successfully.");
+                    builder.setMessage("a=" + a + "\nb=" + b + "\nc=" + c);
+                    builder.setPositiveButton(android.R.string.ok, null);
+                    builder.show();
+                }
+            }
+        );
+    }
+
     public static void setPositionNotifier(PositionNotifier positionNotifier){
         ServerConnection.positionNotifier = positionNotifier;
 
+    }
+
+    public static void setActivityReference(Activity activity){
+        activityReference = activity;
     }
 
     public static boolean isConnected(){
@@ -166,12 +195,16 @@ public class ServerConnection implements Runnable {
     public void run() {
         try {
             while (socket.isConnected()) {
-                switch (dis.readByte()) {
+                byte x=-1;
+                switch (x=dis.readByte()) {
                     case MODUS_BEACON_BROADCAST:
                         receivePosition();
                         break;
                     case MODUS_BEACON_CALIBRATE:
                         receiveCalibrationResult();
+                        break;
+                    default:
+                        throw new RuntimeException("Mode not defined.");
                 }
             }
         } catch (IOException e) {

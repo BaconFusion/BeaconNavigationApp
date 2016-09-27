@@ -108,6 +108,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
         loadPreferences();
         DistanceCalculator.init(this);
+        ServerConnection.setActivityReference(this);
     }
 
     @Override
@@ -129,6 +130,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
         super.onDestroy();
         beaconManager.unbind(this);
 
+        ServerConnection.disconnect();
         savePreferences();
     }
 
@@ -186,6 +188,9 @@ public class MainActivity extends Activity implements BeaconConsumer {
     }
 
     public void onCalibrationClicked(View view){
+        if(!ServerConnection.isConnected())
+            onConnectClicked(new View(this));
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Beacon for Calibration");
         builder.setMessage("Please select a beacon by holding it close to your device, removing others from the immediate vicinity and clicking \"OK\" afterwards.");

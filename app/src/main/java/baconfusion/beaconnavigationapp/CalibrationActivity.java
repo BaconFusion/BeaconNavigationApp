@@ -151,20 +151,8 @@ public class CalibrationActivity extends Activity implements BeaconConsumer{
     }
 
     public static void finishCalibration() {
-
-        //update oneMeterReferenceRSSI - one meter first, mandatory
-        DistanceCalculator.setOneMeterReferenceRSSI(averageRSSI.get(0));
-
-        if (ServerConnection.isConnected()) {
-            ServerConnection.sendCalibrationData(distance, averageRSSI);
-            selfReference.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(selfReference, "Finished calibration successfully.", Toast.LENGTH_SHORT).show();
-                }
-            });
-            selfReference.finish();
-        }
+        ServerConnection.sendCalibrationData(distance, averageRSSI);
+        selfReference.finish();
 
     }
 
