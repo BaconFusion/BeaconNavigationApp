@@ -23,13 +23,14 @@ import java.util.Scanner;
 
 public class CalibrationActivity extends Activity implements BeaconConsumer{
 
-    public static final int DATA_POINTS_PER_DISTANCE = 10;
+    public static final int DATA_POINTS_PER_DISTANCE = 30;
     public static final String TAG = "CalibrationActivity";
     public static final Object syncObject = new Object();
 
     private static BeaconManager beaconManager;
 
-    private static int counter, sum;
+    private static int counter;
+    private static float sum;
     private static ArrayList<Float> distance = new ArrayList<>();
     private static ArrayList<Float> averageRSSI = new ArrayList<>();
 
@@ -90,7 +91,7 @@ public class CalibrationActivity extends Activity implements BeaconConsumer{
     public static void startMeasurementsAt(final float meters){
         countdownTextView.setText(Integer.toString(DATA_POINTS_PER_DISTANCE));
         counter = 0;
-        sum = 0;
+        sum = (float) 0.0;
 
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
@@ -106,7 +107,7 @@ public class CalibrationActivity extends Activity implements BeaconConsumer{
                             && beacon.getId3().toString().equals(calibrationBeaconMinor))) {
                         continue;
                     }
-                    final float rssi = beacon.getRssi() / beacon.getTxPower();
+                    final float rssi = Math.abs((float) beacon.getRssi()) / Math.abs((float) beacon.getTxPower());
 
                     counter++;
                     sum += rssi;
